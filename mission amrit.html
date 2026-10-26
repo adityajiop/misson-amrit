@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MISSION AMRIT: Triage & Evacuation Command</title>
+<style>
+:root{--bg:#0e1410;--card:#17201a;--line:#2b3a2f;--tx:#e6efe6;--mu:#8fa393;--ac:#b7d36b;--r:#ff4d4d;--o:#ff9f43;--y:#f5d142;--g:#4cd964;--k:#777;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#0e1410}}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,Segoe UI,Roboto,sans-serif;font-size:14px}
+header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:8px}
+h1{font-size:16px;margin:0;letter-spacing:1px;color:var(--ac)}
+.pill{padding:3px 10px;border-radius:99px;font-size:12px;border:1px solid var(--line)}
+.on{color:var(--g)}.off{color:var(--r)}
+main{padding:12px;max-width:900px;margin:auto}
+.page{display:none}.page.act{display:block}
+nav{display:flex;gap:6px;padding:8px 12px;border-bottom:1px solid var(--line);overflow-x:auto;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5}nav a{padding:7px 14px;border-radius:6px;color:var(--mu);text-decoration:none;white-space:nowrap;border:1px solid var(--line)}nav a.act{background:var(--ac);color:#111;font-weight:700}
+.rep{padding:8px;border:1px solid var(--r);border-radius:8px;margin-bottom:8px;background:#2a1414;font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px}
+.card h2{font-size:13px;margin:0 0 10px;color:var(--ac);text-transform:uppercase;letter-spacing:1px}
+.full{grid-column:1/-1}
+.timerbox{display:flex;gap:14px;align-items:center}
+.ring{width:84px;height:84px;position:relative;flex:none}
+.ring svg{transform:rotate(-90deg)}.ring b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:26px}
+#msg{padding:10px;border-radius:8px;background:#1f3a22;border:1px solid var(--g);margin-top:10px;display:none}
+label{display:block;font-size:12px;color:var(--mu);margin:8px 0 3px}
+input,select,textarea{width:100%;padding:8px;border-radius:6px;border:1px solid var(--line);background:#0e1410;color:var(--tx);font:inherit}
+button{padding:9px 14px;border-radius:6px;border:0;background:var(--ac);color:#111;font-weight:700;cursor:pointer}
+button.sos{background:var(--r);color:#fff;width:100%;margin-top:10px;padding:12px;font-size:15px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.loc{font-family:monospace;color:var(--ac)}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13px;min-width:520px}
+th,td{padding:6px 8px;text-align:left;border-bottom:1px solid var(--line)}th{color:var(--mu);font-weight:600}
+tr.sel{background:#22301f}tr{cursor:pointer}
+.tag{padding:2px 8px;border-radius:4px;font-weight:700;font-size:11px;color:#111}
+.T1{background:var(--r)}.T2{background:var(--o)}.T3{background:var(--y)}.T4{background:var(--g)}.T0{background:var(--k);color:#fff}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:10px}
+.stat{text-align:center;padding:8px;border-radius:8px;background:#0e1410;border:1px solid var(--line)}.stat b{display:block;font-size:20px}
+svg.map{width:100%;height:auto;background:#101a12;border-radius:8px;border:1px solid var(--line);touch-action:manipulation}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--mu);margin-top:8px}
+.log{max-height:130px;overflow:auto;font-family:monospace;font-size:12px;color:var(--mu)}
+.hi{color:var(--r);font-weight:700}
+</style></head><body>
+<header><h1>⛑ FIELD-MED · TRIAGE &amp; EVAC COMMAND</h1>
+<div><span class="pill" id="net">●</span> <span class="pill" id="navt">⏱ 45s</span> <span class="pill" id="queue">Outbox: 0</span> <span class="pill" id="clock"></span></div></header>
+<nav><a href="#sos" data-p="sos">🚨 SOS</a><a href="#triage" data-p="triage">📊 Triage Board</a><a href="#map" data-p="map">🗺 Map &amp; Evac</a><a href="#server" data-p="server">🖥 Server Room</a></nav>
+<main>
+<section class="card page act" id="p-sos">
+<h2>Soldier SOS · Backup Alert</h2>
+<div class="timerbox"><div class="ring"><svg width="84" height="84"><circle cx="42" cy="42" r="36" fill="none" stroke="#2b3a2f" stroke-width="7"/><circle id="arc" cx="42" cy="42" r="36" fill="none" stroke="#ff4d4d" stroke-width="7" stroke-dasharray="226" stroke-dashoffset="0" stroke-linecap="round"/></svg><b id="t">45</b></div>
+<div><div>Auto-alert in <b id="t2">45</b>s</div><div style="color:var(--mu);font-size:12px">If no action, your location is auto-forwarded to the backup team.</div><div class="loc" id="loc">Locating…</div></div></div>
+<div id="msg"></div>
+<div class="row"><div><label>Name / Rank</label><input id="nm" placeholder="Hav. R. Singh"></div><div><label>Service No.</label><input id="sn" placeholder="IC-12345"></div></div>
+<div class="row"><div><label>Unit</label><input id="un" placeholder="5 Para"></div><div><label>Condition</label><select id="cn"><option>Under fire</option><option>Wounded</option><option>Trapped</option><option>Lost / isolated</option><option>Need medic</option></select></div></div>
+<label>Details</label><textarea id="dt" rows="2" placeholder="Enemy count, injuries, supplies…"></textarea>
+<button class="sos" id="sosb">🚨 SEND SOS NOW TO SERVER ROOM</button>
+</section>
+
+<section class="card page" id="p-triage">
+<h2>Live Triage Board (simulated vitals)</h2>
+<div class="stats" id="stats"></div>
+<div class="tw"><table><thead><tr><th>ID</th><th>HR</th><th>SpO₂</th><th>BP</th><th>RR</th><th>AVPU</th><th>Score</th><th>Priority</th></tr></thead><tbody id="tb"></tbody></table></div>
+<div style="color:var(--mu);font-size:12px;margin-top:6px">Score = modified NEWS2 (HR, SpO₂, SBP, RR, consciousness). Tap row to see its evacuation route.</div>
+</section>
+
+<section class="card page" id="p-map">
+<h2>Tactical Map · Your Location &amp; Evacuation Routes</h2>
+<svg class="map" id="map" viewBox="0 0 800 560"></svg>
+<div class="legend"><span>🔵 You (device)</span><span>✚ Medical post</span><span>⚠ Hazard (tap map to add/remove)</span><span>● Casualty (colour = priority)</span><span>▬ Route (avoids hazards)</span></div>
+<div id="route" style="margin-top:8px"></div>
+<div style="margin-top:6px"><a id="osm" target="_blank" rel="noopener" style="color:var(--ac)">Open real map (OpenStreetMap) ↗</a></div>
+</section>
+
+<section class="card page" id="p-server"><h2>Server Room · Incoming SOS</h2><div id="rep" style="margin-bottom:14px"></div><h2>Event Log</h2><div class="log" style="max-height:340px" id="log"></div></section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const W=20,H=14,C=40;
+let pos={lat:28.6692,lon:77.4538,sim:true};
+let hazards=new Set(["6,4","7,4","6,5","12,9","13,9","12,10","4,10","15,3"]);
+const posts=[{n:"Aid Post A",x:1,y:1},{n:"Aid Post B",x:18,y:12},{n:"Field Hosp. C",x:18,y:1}];
+const me={x:10,y:7};
+let sent=false,sel=0;
+function log(s,c){const d=document.createElement('div');d.innerHTML=new Date().toLocaleTimeString()+' '+(c?'<span class="hi">'+s+'</span>':s);$('log').prepend(d)}
+setInterval(()=>$('clock').textContent=new Date().toLocaleTimeString(),1000);
+
+const reports=[];
+function showRep(){$('rep').innerHTML=reports.length?reports.map(p=>`<div class="rep"><b>${p.auto?'AUTO ALERT':'MANUAL SOS'}</b> · ${new Date(p.t).toLocaleTimeString()}<br>${p.name||'Unknown'} (${p.sn||'-'}) · ${p.unit||'-'} · <b>${p.cond}</b><br><span class="loc">${p.lat.toFixed(5)}, ${p.lon.toFixed(5)}</span><br>${p.det||''}</div>`).join(''):'<span style="color:var(--mu)">No SOS received yet.</span>'}
+showRep();
+/* ---------- connectivity + offline outbox ---------- */
+function ob(){try{return JSON.parse(localStorage.getItem('outbox')||'[]')}catch(e){return []}}
+function setOb(a){try{localStorage.setItem('outbox',JSON.stringify(a))}catch(e){}$('queue').textContent='Outbox: '+a.length}
+let memOb=[];
+function net(){const o=navigator.onLine;$('net').textContent=o?'● ONLINE':'● OFFLINE (queued)';$('net').className='pill '+(o?'on':'off');if(o)flush()}
+function flush(){let a=ob();if(!a.length&&!memOb.length)return;const n=a.length+memOb.length;setOb([]);memOb=[];log('Outbox synced: '+n+' report(s) delivered to server room')}
+function queue(p){let a=ob();a.push(p);memOb.push(p);setOb(a);reports.unshift(p);showRep();log('SOS stored in outbox'+(navigator.onLine?'':' (offline – will auto-send)'));if(navigator.onLine)setTimeout(flush,600)}
+addEventListener('online',net);addEventListener('offline',net);net();setOb(ob());
+
+/* ---------- geolocation ---------- */
+function setLoc(){$('loc').textContent=pos.lat.toFixed(5)+', '+pos.lon.toFixed(5)+(pos.sim?' (simulated)':' (GPS)');$('osm').href='https://www.openstreetmap.org/?mlat='+pos.lat+'&mlon='+pos.lon+'#map=16/'+pos.lat+'/'+pos.lon}
+setLoc();
+if(navigator.geolocation)navigator.geolocation.watchPosition(p=>{pos={lat:p.coords.latitude,lon:p.coords.longitude,sim:false};setLoc()},()=>{$('loc').textContent+=' – GPS blocked, using simulated'},{enableHighAccuracy:true,maximumAge:5000,timeout:10000});
+
+/* ---------- 45s timer ---------- */
+let left=45;
+function tick(){$('navt').textContent=sent?'✔ Alert sent':'⏱ '+left+'s';$('t').textContent=$('t2').textContent=left;$('arc').style.strokeDashoffset=226*(1-left/45)}
+tick();
+const iv=setInterval(()=>{left--;tick();if(left<=0){clearInterval(iv);fire(true)}},1000);
+function fire(auto){
+ if(sent)return;sent=true;clearInterval(iv);left=Math.max(left,0);tick();
+ const p={t:Date.now(),auto,lat:pos.lat,lon:pos.lon,name:$('nm').value,sn:$('sn').value,unit:$('un').value,cond:$('cn').value,det:$('dt').value};
+ queue(p);
+ const m=$('msg');m.style.display='block';m.textContent='Your current location have been forwarded to the backup team';
+ log('SOS '+(auto?'AUTO':'MANUAL')+' @ '+p.lat.toFixed(4)+','+p.lon.toFixed(4)+' '+(p.name||'Unknown')+' ['+p.cond+']',1);
+ setTimeout(()=>go('map'),2000);
+}
+$('sosb').onclick=()=>fire(false);
+
+/* ---------- simulated patients ---------- */
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const sev=[0.9,0.7,0.5,0.3,0.15,0.05,0.6,0.4];
+let pts=sev.map((s,i)=>({id:'C-'+(i+1),s,x:[3,8,14,16,5,12,17,9][i],y:[3,10,4,8,12,2,6,2][i],hr:0,spo2:0,sbp:0,rr:0,av:'A',sc:0,pr:4,h:{}}));
+function vit(p){
+ const s=p.s;p.hr=Math.round(75+s*70+rnd(-5,5));p.spo2=Math.round(99-s*13+rnd(-1,1));
+ p.sbp=Math.round(125-s*50+rnd(-4,4));p.rr=Math.round(15+s*14+rnd(-1,2));
+ p.av=s>.85?'U':s>.7?'P':s>.5?'V':'A';
+ p.s=Math.min(1,Math.max(0,s+rnd(-.03,.035)));
+ let sc=0;sc+=p.hr>130||p.hr<41?3:p.hr>110?2:p.hr>90?1:0;
+ sc+=p.spo2<=91?3:p.spo2<=93?2:p.spo2<=95?1:0;
+ sc+=p.sbp<=90?3:p.sbp<=100?2:p.sbp<=110?1:0;
+ sc+=p.rr<=8||p.rr>=25?3:p.rr>=21?2:p.rr<=11?1:0;
+ sc+=p.av=='A'?0:3;p.sc=sc;p.pr=sc>=7?1:sc>=5?2:sc>=1?3:4;
+}
+const PN={1:'IMMEDIATE',2:'URGENT',3:'DELAYED',4:'MINOR'};
+function render(){
+ pts.forEach(vit);
+ const order=[...pts].sort((a,b)=>b.sc-a.sc);
+ $('tb').innerHTML=order.map(p=>`<tr class="${pts[sel]===p?'sel':''}" data-i="${pts.indexOf(p)}"><td>${p.id}</td><td class="${p.hr>130?'hi':''}">${p.hr}</td><td class="${p.spo2<92?'hi':''}">${p.spo2}%</td><td class="${p.sbp<91?'hi':''}">${p.sbp}</td><td>${p.rr}</td><td>${p.av}</td><td><b>${p.sc}</b></td><td><span class="tag T${p.pr}">${PN[p.pr]}</span></td></tr>`).join('');
+ document.querySelectorAll('#tb tr').forEach(r=>r.onclick=()=>{sel=+r.dataset.i;render()});
+ const cnt=k=>pts.filter(p=>p.pr==k).length;
+ $('stats').innerHTML=[1,2,3,4].map(k=>`<div class="stat"><b style="color:var(--${['','r','o','y','g'][k]})">${cnt(k)}</b>${PN[k]}</div>`).join('')+`<div class="stat"><b>${pts.length}</b>TOTAL</div>`;
+ pts.forEach(p=>{if(p.sc>=7&&!p.h.al){p.h.al=1;log(p.id+' CRITICAL score '+p.sc+' – evac priority 1',1)}if(p.sc<7)p.h.al=0});
+ if(cur=='map')draw();
+}
+setInterval(render,2000);
+
+/* ---------- Dijkstra routing with hazard cost ---------- */
+function route(sx,sy,tx,ty){
+ const key=(x,y)=>x+','+y,dist={},prev={},done={};dist[key(sx,sy)]=0;const q=[[0,sx,sy]];
+ while(q.length){q.sort((a,b)=>a[0]-b[0]);const[d,x,y]=q.shift();const k=key(x,y);if(done[k])continue;done[k]=1;if(x==tx&&y==ty)break;
+  for(let dx=-1;dx<=1;dx++)for(let dy=-1;dy<=1;dy++){if(!dx&&!dy)continue;const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=W||ny>=H)continue;
+   const nk=key(nx,ny);let c=(dx&&dy)?1.41:1;if(hazards.has(nk))c+=60;else if(near(nx,ny))c+=3;
+   if(dist[nk]===undefined||d+c<dist[nk]){dist[nk]=d+c;prev[nk]=k;q.push([d+c,nx,ny])}}}
+ const path=[];let k=key(tx,ty);if(dist[k]===undefined)return null;while(k){const[a,b]=k.split(',').map(Number);path.unshift([a,b]);k=prev[k]}
+ return{path,cost:dist[key(tx,ty)],hz:path.filter(p=>hazards.has(p[0]+','+p[1])).length};
+}
+function near(x,y){for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++)if(hazards.has((x+a)+','+(y+b)))return true;return false}
+function best(x,y){let b=null;posts.forEach(po=>{const r=route(x,y,po.x,po.y);if(r&&(!b||r.cost<b.r.cost))b={po,r}});return b}
+
+/* ---------- map ---------- */
+const col={1:'#ff4d4d',2:'#ff9f43',3:'#f5d142',4:'#4cd964'};
+function draw(){
+ let s='';for(let i=0;i<=W;i++)s+=`<line x1="${i*C}" y1="0" x2="${i*C}" y2="${H*C}" stroke="#1d2b20"/>`;
+ for(let j=0;j<=H;j++)s+=`<line x1="0" y1="${j*C}" x2="${W*C}" y2="${j*C}" stroke="#1d2b20"/>`;
+ hazards.forEach(k=>{const[x,y]=k.split(',').map(Number);s+=`<rect x="${x*C+2}" y="${y*C+2}" width="${C-4}" height="${C-4}" fill="#ff4d4d33" stroke="#ff4d4d"/><text x="${x*C+C/2}" y="${y*C+C/2+6}" text-anchor="middle" font-size="18">⚠</text>`});
+ posts.forEach(p=>s+=`<rect x="${p.x*C+4}" y="${p.y*C+4}" width="${C-8}" height="${C-8}" rx="6" fill="#fff"/><text x="${p.x*C+C/2}" y="${p.y*C+C/2+7}" text-anchor="middle" font-size="22" fill="#d00" font-weight="700">+</text><text x="${p.x*C+C/2}" y="${p.y*C-3}" text-anchor="middle" font-size="10" fill="#8fa393">${p.n}</text>`);
+ const mb=best(me.x,me.y),pb=best(pts[sel].x,pts[sel].y);
+ const pl=(r,c,w)=>r?`<polyline points="${r.r.path.map(p=>(p[0]*C+C/2)+','+(p[1]*C+C/2)).join(' ')}" fill="none" stroke="${c}" stroke-width="${w}" stroke-dasharray="8 5" stroke-linecap="round"/>`:'';
+ s+=pl(mb,'#4aa3ff',4)+pl(pb,col[pts[sel].pr],4);
+ pts.forEach((p,i)=>s+=`<circle cx="${p.x*C+C/2}" cy="${p.y*C+C/2}" r="${i==sel?11:8}" fill="${col[p.pr]}" stroke="${i==sel?'#fff':'#000'}" stroke-width="2" data-i="${i}" style="cursor:pointer"/><text x="${p.x*C+C/2}" y="${p.y*C+C/2-13}" text-anchor="middle" font-size="10" fill="#e6efe6">${p.id}</text>`);
+ s+=`<circle cx="${me.x*C+C/2}" cy="${me.y*C+C/2}" r="22" fill="#4aa3ff22"><animate attributeName="r" values="12;26;12" dur="2s" repeatCount="indefinite"/></circle><circle cx="${me.x*C+C/2}" cy="${me.y*C+C/2}" r="9" fill="#4aa3ff" stroke="#fff" stroke-width="3"/><text x="${me.x*C+C/2}" y="${me.y*C+C/2+28}" text-anchor="middle" font-size="11" fill="#4aa3ff">YOU ${pos.lat.toFixed(4)},${pos.lon.toFixed(4)}</text>`;
+ $('map').innerHTML=s;
+ const f=(b,l)=>b?`<div><b>${l}</b> → ${b.po.n} · ${(b.r.path.length*0.05).toFixed(2)} km · ETA ${Math.ceil(b.r.path.length*0.05/0.005)} min on foot · cost ${b.r.cost.toFixed(0)} · ${b.r.hz?'<span class="hi">'+b.r.hz+' hazard cell(s) unavoidable</span>':'<span class="on">hazard-free</span>'}</div>`:`<div>${l}: no route</div>`;
+ $('route').innerHTML=f(mb,'Your evac route')+f(pb,pts[sel].id+' ('+PN[pts[sel].pr]+') route');
+}
+$('map').addEventListener('click',e=>{
+ const t=e.target;if(t.dataset&&t.dataset.i!==undefined){sel=+t.dataset.i;render();return}
+ const r=$('map').getBoundingClientRect(),x=Math.floor((e.clientX-r.left)/r.width*W),y=Math.floor((e.clientY-r.top)/r.height*H),k=x+','+y;
+ if(hazards.has(k)){hazards.delete(k);log('Hazard cleared at '+k)}else{hazards.add(k);log('Hazard reported at grid '+k+' – routes recalculated',1)}draw();
+});
+let cur='sos';const PG=['sos','triage','map','server'];
+function go(p){location.hash=p}
+function show(){document.querySelectorAll('.page').forEach(e=>e.classList.toggle('act',e.id=='p-'+cur));document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('act',a.dataset.p==cur));if(cur=='map')draw();scrollTo(0,0)}
+addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(PG.includes(h)){cur=h;show()}});
+const h0=location.hash.slice(1);if(PG.includes(h0))cur=h0;
+show();render();log('System online. Simulated feed started.');
+</script></body></html>
